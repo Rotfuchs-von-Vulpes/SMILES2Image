@@ -26,7 +26,7 @@ SMILEStoImage provides a programmatic interface for generating 2D molecular stru
 ### From Source
 
 ```bash
-git clone https://github.com/yourusername/SMILEStoImage.git
+git clone https://github.com/tsiyukino/SMILEStoImage.git
 cd SMILEStoImage
 pip install -r requirements.txt
 pip install -e .

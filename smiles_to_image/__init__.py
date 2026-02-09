@@ -9,5 +9,5 @@ data processing pipelines.
 
 from .converter import smiles_to_image, smiles_to_file
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = ["smiles_to_image", "smiles_to_file"]
