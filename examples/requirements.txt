@@ -1,0 +1,7 @@
+# Additional requirements for running examples
+
+# For web API example
+flask>=2.0.0
+
+# GUI example uses tkinter (included in standard Python)
+# No additional requirements needed
