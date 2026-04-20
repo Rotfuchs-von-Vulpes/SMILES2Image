@@ -5,10 +5,14 @@ This module contains the primary conversion logic for transforming SMILES notati
 into graphical representations of molecular structures using RDKit.
 """
 
+import io
+import re
+import cairosvg
 from io import BytesIO
 from typing import Optional, Tuple, Union
 from rdkit import Chem
 from rdkit.Chem import Draw
+from rdkit.Chem.Draw import rdMolDraw2D
 from PIL import Image
 
 
@@ -56,7 +60,17 @@ def smiles_to_image(
         raise ValueError(f"Invalid SMILES string: {smiles}")
 
     # Generate the molecule image
-    img = Draw.MolToImage(mol, size=img_size)
+    drawer = rdMolDraw2D.MolDraw2DSVG(img_size[0], img_size[1])
+    opts = drawer.drawOptions()
+    opts.clearBackground = False 
+    drawer.DrawMolecule(mol)
+    drawer.FinishDrawing()
+
+    svg = drawer.GetDrawingText()
+    svg = re.sub(r"#000000", "#FFFFFF", svg, flags=re.IGNORECASE)
+    svg = re.sub(r"black", "white", svg, flags=re.IGNORECASE)
+    png_data = cairosvg.svg2png(bytestring=svg.encode("utf-8"))
+    img = Image.open(io.BytesIO(png_data)).convert("RGBA")
 
     # Return PIL Image if requested
     if return_pil:
@@ -71,7 +85,7 @@ def smiles_to_image(
         # JPEG doesn't support transparency, convert RGBA to RGB
         if img.mode == 'RGBA':
             # Create white background
-            background = Image.new('RGB', img.size, (255, 255, 255))
+            background = Image.new('RGB', img.size, (0, 0, 0))
             background.paste(img, mask=img.split()[3] if len(img.split()) == 4 else None)
             img = background
         img.save(img_buffer, format="JPEG", quality=95)
